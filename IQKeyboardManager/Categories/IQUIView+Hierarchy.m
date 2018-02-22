@@ -55,35 +55,55 @@
     return nil;
 }
 
+//-(UIViewController *)topMostController
+//{
+//    NSMutableArray<UIViewController*> *controllersHierarchy = [[NSMutableArray alloc] init];
+//
+//    UIViewController *topController = self.window.rootViewController;
+//
+//    if (topController)
+//    {
+//        [controllersHierarchy addObject:topController];
+//    }
+//
+//    while ([topController presentedViewController]) {
+//
+//        topController = [topController presentedViewController];
+//        [controllersHierarchy addObject:topController];
+//    }
+//
+//    UIViewController *matchController = [self viewController];
+//
+//    while (matchController != nil && [controllersHierarchy containsObject:matchController] == NO)
+//    {
+//        do
+//        {
+//            matchController = (UIViewController*)[matchController nextResponder];
+//
+//        } while (matchController != nil && [matchController isKindOfClass:[UIViewController class]] == NO);
+//    }
+//
+//    return (UIViewController*)matchController;
+//}
 -(UIViewController *)topMostController
 {
-    NSMutableArray<UIViewController*> *controllersHierarchy = [[NSMutableArray alloc] init];
-    
     UIViewController *topController = self.window.rootViewController;
-    
-    if (topController)
-    {
-        [controllersHierarchy addObject:topController];
+        if([topController isKindOfClass:[UITabBarController class]]){
+                UITabBarController*tabbarController = (UITabBarController*)topController;
+                topController = tabbarController.selectedViewController;
+                if([topController isKindOfClass:[UINavigationController class]]){
+                        UINavigationController*navController = (UINavigationController*)topController;
+                        topController = navController.visibleViewController;
+                    }
+    } else if([topController isKindOfClass:[UINavigationController class]]){
+        UINavigationController*navController = (UINavigationController*)topController;
+                topController = navController.visibleViewController;
     }
     
-    while ([topController presentedViewController]) {
-        
-        topController = [topController presentedViewController];
-        [controllersHierarchy addObject:topController];
-    }
-    
-    UIViewController *matchController = [self viewController];
-    
-    while (matchController != nil && [controllersHierarchy containsObject:matchController] == NO)
-    {
-        do
-        {
-            matchController = (UIViewController*)[matchController nextResponder];
-            
-        } while (matchController != nil && [matchController isKindOfClass:[UIViewController class]] == NO);
-    }
-    
-    return (UIViewController*)matchController;
+        while ([topController presentedViewController]){
+                topController = [topController presentedViewController];
+            }
+        return topController;
 }
 
 -(UIView*)superviewOfClassType:(Class)classType
